@@ -24,7 +24,7 @@ jobs:
         mkdir build
         cd build
         cmake .. # Si vous utilisez CMake
-        make -j $(nproc) # Compile le code en utilisant tous les cœurs du processeur
+        cmake ../cpp/BeagleBoneGpioControl/# Compile le code en utilisant tous les cœurs du processeur
         # Si vous n'utilisez pas CMake, remplacez par votre commande de compilation (ex: g++ -o mon_executable *.cpp)
 
     - name: Static Analysis with cppcheck
