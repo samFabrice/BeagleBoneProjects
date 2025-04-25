@@ -17,7 +17,7 @@ jobs:
     - name: Set up C++ environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++ cppcheck
+        sudo apt-get install -y g++ cppcheck cmake # Ajout de cmake pour la configuration
 
     - name: Configure and Build
       run: |
@@ -29,7 +29,7 @@ jobs:
 
     - name: Static Analysis with cppcheck
       run: |
-        cppcheck --enable=all --suppress=unusedFunction build/mon_executable # Remplacez build/mon_executable par votre exécutable ou vos fichiers sources
+        cppcheck --enable=all --suppress=unusedFunction build/main build/tests/gpio_test # Analyse des deux exécutables ou sources
         # Vous pouvez ajuster les options de cppcheck selon vos besoins
 
     - name: Archive Production Artifact (Optional)
@@ -38,5 +38,5 @@ jobs:
         name: production-build
         path: |
           build/main
-          build/tests/gpio_test # Si votre compilation produit un exécutable
+          build/tests/gpio_test
         if-no-files-behavior: ignore
