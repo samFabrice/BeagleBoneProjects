@@ -2,41 +2,39 @@ name: CI - Build and Static Analysis
 
 on:
   push:
-    branches: [ "main", "master" ] # Déclenche le workflow sur les push vers les branches main et master
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main", "master" ] # Déclenche le workflow sur les pull requests vers les branches main et master
+    branches: [ "main", "master" ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest # Utilise un environnement Ubuntu Linux pour exécuter le job
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4 # Récupère le code du dépôt
+      uses: actions/checkout@v4
 
     - name: Set up C++ environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y g++ cppcheck cmake # Ajout de cmake pour la configuration
+        sudo apt-get install -y g++ cppcheck cmake
 
     - name: Configure and Build
       run: |
         mkdir build
         cd build
-        cmake .. # Si vous utilisez CMake
-        cmake ../cpp/BeagleBoneGpioControl/# Compile le code en utilisant tous les cœurs du processeur
-        # Si vous n'utilisez pas CMake, remplacez par votre commande de compilation (ex: g++ -o mon_executable *.cpp)
+        cmake ..
+        make -j $(nproc)
 
     - name: Static Analysis with cppcheck
       run: |
-        cppcheck --enable=all --suppress=unusedFunction build/main build/tests/gpio_test # Analyse des deux exécutables ou sources
-        # Vous pouvez ajuster les options de cppcheck selon vos besoins
+        cppcheck --enable=all --suppress=unusedFunction build/main build/tests/gpio_test
 
-    #- name: Archive Production Artifact (Optional)
-    #  uses: actions/upload-artifact@v4
-    #  with:
-    #    name: production-build
-    #    path: |
-    #      build/main
-    #      build/tests/gpio_test
-    #    if-no-files-behavior: ignore
+    # - name: Archive Production Artifact (Optional)
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: production-build
+    #     path: |
+    #       build/main
+    #       build/tests/gpio_test
+    #     if-no-files-behavior: ignore
