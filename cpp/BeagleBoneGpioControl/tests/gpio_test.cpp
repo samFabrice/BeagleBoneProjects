@@ -11,23 +11,22 @@ std::string readFile(const std::string& filename)
 }
 
 namespace{
-    
+    const int GPIO_TO_TEST = 46;
     TEST(GpioTest, GetGpioNameReturnsSomeThing)
     {
-        gpio_control::GPIO gpio(42);
+        gpio_control::GPIO gpio(GPIO_TO_TEST);
         std::string name = gpio.getName();
         ASSERT_FALSE(name.empty());
-        ASSERT_EQ(gpio.getPin(), 42);
-        ASSERT_EQ(name,"gpio_42");
+        ASSERT_EQ(gpio.getPin(), GPIO_TO_TEST);
+        ASSERT_EQ(name,"gpio_46");
 
     }
 
     TEST(GpioTest, ExportGpioShouldReturnTrueOnSuccess)
     {
-        int pin = 3;
-        gpio_control::GPIO gpio(pin);
+        gpio_control::GPIO gpio(GPIO_TO_TEST);
         if(!gpio.isExported()){
-            GTEST_SKIP() << "GPIO " << pin << " n'est pas exporté. Test ignoré.";
+            ASSERT_TRUE(gpio.exportGpio());
             return;
         }
         ASSERT_TRUE(gpio.exportGpio());
@@ -36,10 +35,9 @@ namespace{
 
     TEST(GpioTest, UnexportGpioShouldReturnTrueOnSuccess)
     {
-        int pin = 35;
-        gpio_control::GPIO gpio(pin);
+        gpio_control::GPIO gpio(GPIO_TO_TEST);
         if(!gpio.isExported()){
-            GTEST_SKIP() << "GPIO " << pin << " n'est pas exporté. Test ignoré.";
+            ASSERT_TRUE(gpio.exportGpio());
             return;
         }
         ASSERT_TRUE(gpio.unexportGpio());
@@ -47,42 +45,39 @@ namespace{
 
     TEST(GpioTest, setDirectionReturnTrueOnSuccessAndWriteOutToFile)
     {
-        int pin = 3;
-        gpio_control::GPIO gpio(pin);
+        gpio_control::GPIO gpio(GPIO_TO_TEST);
         if(!gpio.isExported()){
-            GTEST_SKIP() << "GPIO " << pin << " n'est pas exporté. Test ignoré.";
+            ASSERT_TRUE(gpio.exportGpio());
             return;
         }
         ASSERT_TRUE(gpio.exportGpio());
         ASSERT_TRUE(gpio.setDirection("out"));
         
-        ASSERT_EQ(readFile("/sys/class/gpio/gpio" + std::to_string(pin) + "/direction"),"out");
+        ASSERT_EQ(readFile("/sys/class/gpio/gpio" + std::to_string(GPIO_TO_TEST) + "/direction"),"out");
 
         ASSERT_TRUE(gpio.unexportGpio());
     }
 
     TEST(GpioTest, setDirectionReturnTrueOnSuccessAndWriteInToFile)
     {
-        int pin = 116;
-        gpio_control::GPIO gpio(pin);
+        gpio_control::GPIO gpio(GPIO_TO_TEST);
         if(!gpio.isExported()){
-            GTEST_SKIP() << "GPIO " << pin << " n'est pas exporté. Test ignoré.";
+            ASSERT_TRUE(gpio.exportGpio());
             return;
         }
         ASSERT_TRUE(gpio.exportGpio());
         ASSERT_TRUE(gpio.setDirection("in"));
         
-        ASSERT_EQ(readFile("/sys/class/gpio/gpio" + std::to_string(pin) + "/direction"),"in");
+        ASSERT_EQ(readFile("/sys/class/gpio/gpio" + std::to_string(GPIO_TO_TEST) + "/direction"),"in");
 
         ASSERT_TRUE(gpio.unexportGpio());
     }
 
     TEST(GpioTest, setDirectionReturnFalseOnInvalidDirectiont)
     {
-        int pin = 79;
-        gpio_control::GPIO gpio(pin);
+        gpio_control::GPIO gpio(GPIO_TO_TEST);
         if(!gpio.isExported()){
-            GTEST_SKIP() << "GPIO " << pin << " n'est pas exporté. Test ignoré.";
+            ASSERT_TRUE(gpio.exportGpio());
             return;
         }
         ASSERT_TRUE(gpio.exportGpio());
@@ -94,10 +89,9 @@ namespace{
 
     TEST(GpioTest, ReadValueReturnCorrectValue)
     {
-        int pin = 74;
-        gpio_control::GPIO gpio(pin);
+        gpio_control::GPIO gpio(GPIO_TO_TEST);
         if(!gpio.isExported()){
-            GTEST_SKIP() << "GPIO " << pin << " n'est pas exporté. Test ignoré.";
+            ASSERT_TRUE(gpio.exportGpio());
             return;
         }
 
