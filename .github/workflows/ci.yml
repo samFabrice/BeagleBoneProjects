@@ -1,0 +1,40 @@
+name: CI - Build and Static Analysis
+
+on:
+  push:
+    branches: [ "main", "master" ] # Déclenche le workflow sur les push vers les branches main et master
+  pull_request:
+    branches: [ "main", "master" ] # Déclenche le workflow sur les pull requests vers les branches main et master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Utilise un environnement Ubuntu Linux pour exécuter le job
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4 # Récupère le code du dépôt
+
+    - name: Set up C++ environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y g++ cppcheck
+
+    - name: Configure and Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. # Si vous utilisez CMake
+        make -j $(nproc) # Compile le code en utilisant tous les cœurs du processeur
+        # Si vous n'utilisez pas CMake, remplacez par votre commande de compilation (ex: g++ -o mon_executable *.cpp)
+
+    - name: Static Analysis with cppcheck
+      run: |
+        cppcheck --enable=all --suppress=unusedFunction build/mon_executable # Remplacez build/mon_executable par votre exécutable ou vos fichiers sources
+        # Vous pouvez ajuster les options de cppcheck selon vos besoins
+
+    - name: Archive Production Artifact (Optional)
+      uses: actions/upload-artifact@v3
+      with:
+        name: production-build
+        path: build/mon_executable # Si votre compilation produit un exécutable
+        if-no-files-behavior: ignore

@@ -28,11 +28,22 @@ int main()
     signal(SIGINT, signal_handler);
 
     gpio_control::GPIO ledPin(60);
+    gpio_control::GPIO boutonPoussoir(48);
     
-    if(!ledPin.isExported()){
+    if(!ledPin.isExported())
+    {
         if(!ledPin.exportGpio()){
             std::cerr << "[Err:] Erreur lors de l'exportation du GPIO" << ledPin.getName();
             return 1;
+        }
+    }
+
+    if(!boutonPoussoir.isExported())
+    {
+        if(!boutonPoussoir.exportGpio())
+        {
+            std::cerr << "[Err:] Erreur lors de l'exportation du GPIO" << boutonPoussoir.getName();
+            return 1; 
         }
     }
 
@@ -41,24 +52,28 @@ int main()
         ledPin.unexportGpio();
         return 1;
     }
+
+    if(!boutonPoussoir.setDirection("in"))
+    {
+        std::cerr << "Erreur lors de la configuration de la direction du GPIO" << boutonPoussoir.getName();
+        boutonPoussoir.unexportGpio();
+        return 1;
+    }
     
-    std::cout << "Direction configurée : " << readFile("/sys/class/gpio/gpio60/direction") << std::endl;
+    std::cout << "Direction led configurée : " << readFile("/sys/class/gpio/gpio60/direction") << std::endl;
+    std::cout << "Direction bouton configurée : " << readFile("/sys/class/gpio/gpio48/direction") << std::endl;
 
     std::cout << "Clignotement de la LED (Ctrl+C pour arrêter)..." << std::endl;
     while(!stop_flag.load())
     {
-        if (!ledPin.writeValue(1)) {
-            std::cerr << "Erreur lors de l'écriture de la valeur HIGH." << std::endl;
-        }
-        std::cout << "after writing 1 :" << ledPin.readValue() << std::endl;
+        int boutonState = boutonPoussoir.readValue();
+
+        ledPin.writeValue(!boutonState);
+       
+        std::cout << "bp value =  :" << boutonPoussoir.readValue() << std::endl;
+        std::cout << "led value =  :" << ledPin.readValue() << std::endl;
+
         usleep(500000);
-
-        if (!ledPin.writeValue(0)) {
-            std::cerr << "Erreur lors de l'écriture de la valeur LOW." << std::endl;
-        }
-        std::cout << "after writing 0 :" << ledPin.readValue() << std::endl;
-
-        usleep(500000); 
     }
     // Nettoyage final : désexporter le GPIO
     if (!ledPin.unexportGpio()) {
