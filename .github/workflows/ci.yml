@@ -36,5 +36,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: production-build
-        path: build/mon_executable # Si votre compilation produit un exécutable
+        path: |
+	  build/main
+	  build/tests/gpio_test # Si votre compilation produit un exécutable
         if-no-files-behavior: ignore
