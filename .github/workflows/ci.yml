@@ -32,11 +32,11 @@ jobs:
         cppcheck --enable=all --suppress=unusedFunction build/main build/tests/gpio_test # Analyse des deux exécutables ou sources
         # Vous pouvez ajuster les options de cppcheck selon vos besoins
 
-    - name: Archive Production Artifact (Optional)
-      uses: actions/upload-artifact@v3
-      with:
-        name: production-build
-        path: |
-          build/main
-          build/tests/gpio_test
-        if-no-files-behavior: ignore
+    #- name: Archive Production Artifact (Optional)
+    #  uses: actions/upload-artifact@v4
+    #  with:
+    #    name: production-build
+    #    path: |
+    #      build/main
+    #      build/tests/gpio_test
+    #    if-no-files-behavior: ignore
