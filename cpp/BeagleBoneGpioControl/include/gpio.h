@@ -4,9 +4,10 @@
 #include <fstream>
 #include <iostream>
 #include <sys/stat.h>
+#include "gpio_interface.h"
 
 namespace gpio_control{
-    class GPIO{
+    class GPIO : public GPIOInterface{
         public:
             explicit GPIO(int );
             ~GPIO();
@@ -14,10 +15,10 @@ namespace gpio_control{
             std::string getName( ) const ;
             bool exportGpio();
             bool unexportGpio();
-            int readValue( ) const;
-            bool setDirection(const std::string& );
+            int readValue( ) const override;
+            bool setDirection(const std::string& ) override;
             bool isExported() const;
-            bool writeValue(int ) ;
+            bool writeValue(int ) override ;
         private:
             int gpioNumber;
             const std::string GPIO_PATH = "/sys/class/gpio";

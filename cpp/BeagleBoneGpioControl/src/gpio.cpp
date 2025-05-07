@@ -22,7 +22,7 @@ namespace gpio_control {
 
     bool GPIO::exportGpio()
     {
-        std::ofstream exportFile(GPIO_PATH + "/export");
+        std::ofstream exportFile(this->GPIO_PATH + "/export");
         if(exportFile.is_open())
         {
             exportFile << gpioNumber << std::endl;
@@ -89,7 +89,7 @@ namespace gpio_control {
 
     bool GPIO::writeValue(int value)
     {
-        std::ofstream file(GPIO_PATH + "/gpio" + std::to_string(gpioNumber) + "/value");
+        std::ofstream file(this->GPIO_PATH + "/gpio" + std::to_string(this->gpioNumber) + "/value");
         if(file.is_open())
         {
             file << value <<std::endl;
